@@ -1,5 +1,6 @@
 const express = require('express');
 const jose = require('node-jose');
+const jws = require('jws');
 const fs = require('fs');
 const ms = require('ms');
 
@@ -52,6 +53,22 @@ app.get('/add', async (req, res) => {
     
     return res.json({ message: 'ok' });
 });
+
+app.get('/verify', async (req, res) => {
+    const [_, tokenString] = req.headers['authorization'].split(" ");
+
+    const keys = fs.readFileSync('keys.json');
+    const keyStore = await jose.JWK.asKeyStore(keys.toString());
+
+    const tokenObj = jws.decode(tokenString);
+
+    const kid = tokenObj.header.kid;
+    const key = keyStore.get(kid);
+
+    await jose.JWS.createVerify(key).verify(tokenString);
+
+    return res.json({ message: "authenticated" });
+})
 
 app.listen(8000, '0.0.0.0', () => {
     console.log('app started on port 0.0.0.0:8000')
