@@ -31,7 +31,7 @@ app.post('/token', async (req, res) => {
             "aud": "https://your.krakend.io", 
             "iss": "https://your-backend", 
             "sub": "1234567890qwertyuio", 
-            "jti": "mnb23vcsrt756yuiomn12876bvcx98ertyuiop", 
+            "jti": "mnb23vcsrt756yuiomn12876bvcx98ertyuiop",
             "exp": 1735689600 
         }, 
         "exp": 1735689600 
@@ -57,10 +57,17 @@ app.get('/jwt-token', async (req, res) => {
     return res.json({ token });
 });
 
+// for signing, keys need to be plain
 app.get('/jwks', async (req, res) => {
-
     const ks = require('./keys.json');
     return res.json(ks);
+});
+
+// for verifying, keys need to be load as key store
+app.get('/jwks2', async (req, res) => {
+    const ks = require('./keys.json');
+    const keyStore = await jose.JWK.asKeyStore(ks);
+    return res.json(keyStore.toJSON());
 });
 
 app.get('/generate', async (req, res) => {
