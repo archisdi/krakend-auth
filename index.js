@@ -3,8 +3,12 @@ const jose = require('node-jose');
 const jws = require('jws');
 const fs = require('fs');
 const ms = require('ms');
+const morgan = require('morgan');
 
 const app = express();
+
+app.use(morgan("common"));
+
 const Claim = {
     sub: "1103132074"
 }
@@ -13,7 +17,28 @@ app.get('/users', (req, res) => {
     return res.json({ ...req.headers })
 });
 
-app.get('/token', async (req, res) => {
+app.post('/token', async (req, res) => {
+    return res.json({ 
+        "access_token": { 
+            "aud": "https://your.krakend.io", 
+            "iss": "https://your-backend", 
+            "sub": "1234567890qwertyuio", 
+            "jti": "mnb23vcsrt756yuiomnbvcx98ertyuiop", 
+            "roles": ["role_a", "role_b"], 
+            "exp": 1735689600 
+        }, 
+        "refresh_token": { 
+            "aud": "https://your.krakend.io", 
+            "iss": "https://your-backend", 
+            "sub": "1234567890qwertyuio", 
+            "jti": "mnb23vcsrt756yuiomn12876bvcx98ertyuiop", 
+            "exp": 1735689600 
+        }, 
+        "exp": 1735689600 
+     });
+});
+
+app.get('/jwt-token', async (req, res) => {
     const ks = fs.readFileSync('keys.json')
     const keyStore = await jose.JWK.asKeyStore(ks.toString())
     const [key] = keyStore.all({ use: 'sig' })
@@ -32,21 +57,13 @@ app.get('/token', async (req, res) => {
     return res.json({ token });
 });
 
-app.get('/oauth2/jwks', async (req, res) => {
-    console.log('jwks');
-    const ks = fs.readFileSync('keys.json');
-    const keyStore = await jose.JWK.asKeyStore(ks.toString());
-    return res.json(keyStore.toJSON());
-});
+app.get('/jwks', async (req, res) => {
 
-app.get('/oauth2/symetric', async (req, res) => {
-    console.log('jwks');
-    const ks = require('./symetric.json');
-    // const keyStore = await jose.JWK.asKeyStore(ks.toString());
+    const ks = require('./keys.json');
     return res.json(ks);
 });
 
-app.get('/add', async (req, res) => {
+app.get('/generate', async (req, res) => {
     const keyStore = jose.JWK.createKeyStore();
     await keyStore.generate('RSA', 2048, {alg: 'RS256', use: 'sig' });
     fs.writeFileSync('keys.json', JSON.stringify(keyStore.toJSON(true), null, '  '));

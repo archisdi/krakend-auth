@@ -12,6 +12,7 @@
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
     "jws": "^4.0.0",
+    "morgan": "^1.10.0",
     "node-jose": "^2.1.1"
   }
 }
