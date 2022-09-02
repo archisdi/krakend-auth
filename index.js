@@ -13,10 +13,12 @@ const Claim = {
     sub: "1103132074"
 }
 
+// return all headers to show propagated claims
 app.get('/users', (req, res) => {
     return res.json({ ...req.headers })
 });
 
+// generate token to be signed as JWT
 app.post('/token', async (req, res) => {
     return res.json({ 
         "access_token": { 
@@ -38,12 +40,15 @@ app.post('/token', async (req, res) => {
      });
 });
 
+// generate JWT token the traditional way
 app.get('/jwt-token', async (req, res) => {
     const ks = fs.readFileSync('keys.json')
     const keyStore = await jose.JWK.asKeyStore(ks.toString())
-    const [key] = keyStore.all({ use: 'sig' })
+    const keys = keyStore.all({ use: 'sig' })
 
-    const opt = { compact: true, jwk: key, fields: { typ: 'JWT' } }
+    const key = keys[1]; // choose which key to use
+
+    const opt = { compact: true, fields: { typ: 'JWT' } }
     const payload = JSON.stringify({
       exp: Math.floor((Date.now() + ms('1d')) / 1000),
       iat: Math.floor(Date.now() / 1000),
@@ -58,18 +63,19 @@ app.get('/jwt-token', async (req, res) => {
 });
 
 // for signing, keys need to be plain
-app.get('/jwks', async (req, res) => {
+app.get('/symetric', async (req, res) => {
     const ks = require('./keys.json');
     return res.json(ks);
 });
 
 // for verifying, keys need to be load as key store
-app.get('/jwks2', async (req, res) => {
+app.get('/jwks', async (req, res) => {
     const ks = require('./keys.json');
     const keyStore = await jose.JWK.asKeyStore(ks);
     return res.json(keyStore.toJSON());
 });
 
+// regenerate JWK into JSON file
 app.get('/generate', async (req, res) => {
     const keyStore = jose.JWK.createKeyStore();
     await keyStore.generate('RSA', 2048, {alg: 'RS256', use: 'sig' });
@@ -78,6 +84,7 @@ app.get('/generate', async (req, res) => {
     return res.json({ message: 'ok' });
 });
 
+// verify JWT signature with JWK
 app.get('/verify', async (req, res) => {
     const [_, tokenString] = req.headers['authorization'].split(" ");
 
@@ -93,6 +100,13 @@ app.get('/verify', async (req, res) => {
 
     return res.json({ message: "authenticated" });
 })
+
+// regenerate JWK into JSON file
+app.get('/generate-from-secret', async (req, res) => {
+    const keyStore = jose.JWK.createKeyStore();
+    await keyStore.generate('oct', 256, { alg: 'HS256', k: "wow" });
+    return res.json(keyStore.toJSON());
+});
 
 app.listen(8000, '0.0.0.0', () => {
     console.log('app started on port 0.0.0.0:8000')

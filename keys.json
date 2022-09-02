@@ -13,6 +13,13 @@
       "dp": "kw1ynW46cyhLluupbzmXnpXGh4quJY3Jx8aZh4rzzwdkX50FruA4n9VcG9xb2xDpkQCxNa3a16IOKoLxfEI0KXp7HFzqPC-vy1V0Ndt7O8SqluRfZVNgFGN46NrG7kr9psPQx-9tScdfLdHgWJP5D0fIyZj7DXUSBaVTFWg22lU",
       "dq": "2sc88aaykC-7Sdi-A2VS29hDeLnphRly4T2UaQdiTZ4ywhj3g7QqcdlDMTx99ucIc3HhSWq0Wsbla3mcI8NhJF2JI6N54voaLg-2Z_honA0wOxxllYjRW3T7q9LLPFBPTEx5BSpWFun0H8cp2j-4yRt7hI_A-LeEM7Bm95th8Lc",
       "qi": "KqDZhQkzKQWyTU9viMSUZ7n2VNjNWPd9iBvgaDyfW3vHCNe1m8SV71qcv2nlvLH5gitf85vSGX-Hwl6o9ud0IJOCpX4wcG1ZreL_kxYE4h_jWWFmIzirSPEs1FW_OGhYVYd_f_HcLlN7OIgrgOFAJSSUdizEI49ij6xn-ViHZ30"
-    }
+    },
+    {
+      "kty": "oct",
+      "use": "sig",
+      "kid": "key-1",
+      "k": "8A73766A9A8D6",
+      "alg": "HS256"
+  }
   ]
 }
